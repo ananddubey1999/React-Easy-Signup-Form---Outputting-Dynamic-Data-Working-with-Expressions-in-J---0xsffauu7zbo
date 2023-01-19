@@ -1,77 +1,55 @@
-import { validateFormData } from './utils/validation';
+import React, { useState } from "react";
 
+import { signUpFormValidation } from "./../utils/validation";
+const initialState = {
+  name: "",
+  email: "",
+  password: "",
+  consent: "off"
+};
 const App = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    consent: false
-  });
-
-  // Used to store errors
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    const { id, value, checked } = e.target;
-    setFormData({
-      ...formData,
-      [id]: id === "consent" ? checked : value
-    });
-    setErrors({});
+  const [user, setUser] = useState(initialState);
+  const [result, setResult] = useState({});
+  const consentHandler = (e) => {
+    setUser({ ...user, [e.target.id]: e.target.checked });
   };
-
-  const handleSubmit = (e) => {
+  const changeHandler = (e) => {
+    setUser({ ...user, [e.target.id]: e.target.value });
+  };
+  const submitHandler = (e) => {
     e.preventDefault();
-    const errors = validateFormData(formData);
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-    } else {
-      // submit form
-    }
+    setResult(signUpFormValidation(user));
+    console.log(result);
   };
-
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="name">Name:</label>
-      <input
-        id="name"
-        value={formData.name}
-        onChange={handleChange}
-        type="text"
-      />
-      {errors.name && <div>{errors.name}</div>}
-
-      <label htmlFor="email">Email:</label>
-      <input
-        id="email"
-        value={formData.email}
-        onChange={handleChange}
-        type="text"
-      />
-      {errors.email && <div>{errors.email}</div>}
-
-      <label htmlFor="password">Password:</label>
-      <input
-        id="password"
-        value={formData.password}
-        onChange={handleChange}
-        type="password"
-      />
-      {errors.password && <div>{errors.password}</div>}
-
-      <label htmlFor="consent">
-        <input
-          id="consent"
-          checked={formData.consent}
-          onChange={handleChange}
-          type="checkbox"
-        />
-        I agree to the Terms and Conditions
-      </label>
-      {errors.consent && <div>{errors.consent}</div>}
-
-      <button>Signup</button>
-    </form>
+    <div>
+      <form onSubmit={submitHandler}>
+        <div>
+          <label htmlFor="name">Name :</label>
+          <input type="text" id="name" onChange={(e) => changeHandler(e)} />
+          {result && <p style={{ color: "red" }}>{result.name}</p>}
+        </div>
+        <div>
+          <label htmlFor="email">Email :</label>
+          <input type="email" id="email" onChange={(e) => changeHandler(e)} />
+          {result && <p style={{ color: "red" }}>{result.email}</p>}
+        </div>
+        <div>
+          <label htmlFor="password">Password :</label>
+          <input type="text" id="password" onChange={(e) => changeHandler(e)} />
+          {result && <p style={{ color: "red" }}>{result.password}</p>}
+        </div>
+        <div>
+          <label htmlFor="consent">Consent :</label>
+          <input
+            type="checkbox"
+            id="consent"
+            onChange={(e) => consentHandler(e)}
+          />
+        </div>
+        <button type="submit">Signup</button>
+      </form>
+    </div>
   );
 };
 
